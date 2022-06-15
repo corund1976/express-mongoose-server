@@ -1,3 +1,8 @@
+# Enviroment variables
+*.env
+
+package-lock.json
+
 # Logs
 logs
 *.log
