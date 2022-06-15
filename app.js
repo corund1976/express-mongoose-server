@@ -11,8 +11,9 @@ import contactRouter from './routes/contactRouter.js'
 const app = express()
 
 const __dirname = path.resolve()
+const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
-app.use(morgan('dev'))
+app.use(morgan(formatsLogger))
 app.use(cors())
 
 app.use(express.json());
@@ -27,7 +28,8 @@ app.use('/contacts', contactRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  next(createError(404));
+  res.status(404).json({ message: '🚫 Not found' })
+  // next(createError(404));
 });
 
 // error handler
@@ -35,8 +37,8 @@ app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
   // render the error page
+  // res.status(err.status || 500).json({ message: err.message })
   res.status(err.status || 500);
   // res.render('error');
 });
