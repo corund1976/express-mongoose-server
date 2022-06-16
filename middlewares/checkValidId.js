@@ -10,7 +10,7 @@ const checkValidId = (req, res, next) => {
       message: `Not valid contact id ${id}`,
     })
     // next({ status: 400 })
-    next(createError(400));
+    return next(createError(400));
   }
 
   next()

@@ -28,7 +28,7 @@ app.use('/contacts', contactRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  res.status(404).json({ message: '🚫 Not found' })
+  res.status(404).json({ message: '🚫 Page not found' })
   // next(createError(404));
 });
 

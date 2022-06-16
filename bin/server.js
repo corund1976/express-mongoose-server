@@ -4,17 +4,19 @@ import app from '../app.js'
 
 mongoose.Promise = global.Promise
 
-const { DB_HOST, PORT = 3000 } = process.env
+const { USER, PASSWORD, HOST, DATABASE, PORT = 3000 } = process.env
+
+const uri = `mongodb+srv://${USER}:${PASSWORD}@${HOST}/${DATABASE}?retryWrites=true&w=majority`
 
 mongoose
-  .connect(DB_HOST)
+  .connect(uri)
   .then(() => {
     console.log('👌 Connection to MongoDB succesful ...')
     app.listen(PORT, () =>
-      console.log('🐇 Server is running... Use API on port:', PORT)
+      console.log('✅ Server is running... Use API on port:', PORT)
     )
   })
   .catch(error => {
-    console.log('🛑 Connection to MongoDB unsuccesful: ', error.message);
+    console.log('🚫 Connection to MongoDB unsuccesful: ', error.message);
     process.exit(1)
   })

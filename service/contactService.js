@@ -1,35 +1,27 @@
 import Contact from './contactSchema.js'
 
-const listContacts = async () => {
-  return await Contact.find()
+const listContacts = () => {
+  return Contact.find()
 }
 
-const getContactById = async (contactId) => {
-  return await Contact.findById(contactId)
-  // return await Contact.findById({ _id: contactId });
+const getContactById = (contactId) => {
+  return Contact.findById(contactId)
 }
 
-const addContact = async (newContact) => {
-  const { name, email, phone } = newContact
-  const contact = new Contact({
-    name: name,
-    email: email,
-    phone: phone,
-  });
-  return await contact.save();
+const addContact = ({ name, email, phone }) => {
+  return Contact.create({ name, email, phone })
 }
 
-const updateContact = () => {
-
+const updateContact = (contactId, update) => {
+  return Contact.findByIdAndUpdate(contactId, update, { new: true })
 }
 
-const updateStatusContact = () => {
-
+const updateStatusContact = (contactId, favoriteUpdate) => {
+  return Contact.findByIdAndUpdate(contactId, favoriteUpdate, { new: true })
 }
 
-const removeContact = async (contactId) => {
-  return await Contact.findByIdAndRemove(contactId);
-  // return await Contact.findByIdAndRemove({ _id: contactId });
+const removeContact = (contactId) => {
+  return Contact.findByIdAndRemove(contactId);
 }
 
 export {
