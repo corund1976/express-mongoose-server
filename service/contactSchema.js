@@ -1,28 +1,59 @@
-import mongoose from "mongoose"
+import mongoose from 'mongoose'
+import Joi from 'joi'
 
 const { Schema, SchemaTypes, model } = mongoose
 
-const contactSchema = new Schema({
-  name: {
-    type: String,
-    required: [true, 'Set name for contact'],
+const contactSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: [true, 'Set name for contact'],
+    },
+    email: {
+      type: String,
+    },
+    phone: {
+      type: String,
+    },
+    favorite: {
+      type: Boolean,
+      default: false,
+    },
+    owner: {
+      type: SchemaTypes.ObjectId,
+      ref: 'user',
+    },
   },
-  email: {
-    type: String,
-  },
-  phone: {
-    type: String,
-  },
-  favorite: {
-    type: Boolean,
-    default: false,
-  },
-  owner: {
-    type: SchemaTypes.ObjectId,
-    ref: 'user',
-  },
-})
+  { versionKey: false, timestamps: true },
+)
 
 const Contact = model('Contact', contactSchema)
 
-export default Contact
+const contactJoiSchema = Joi.object({
+  name: Joi.string()
+    .alphanum()
+    .min(3)
+    .max(30),
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'ua'] } }),
+  phone: Joi.string()
+    .alphanum()
+    .min(3)
+    .max(30),
+  favorite: Joi.boolean(),
+})
+
+export { Contact, contactJoiSchema }
+
+// { versionKey: false, timestamps: true }
+// Данные опции, отключают версионирование документов установкой значение
+// свойства versionKey в false.Mongoose по умолчанию добавляет версионирование -
+// параметр __v, который указывает версию измененного документа.
+// В основном это нужно для документов со сложной структурой,
+// а поскольку структура нашей схемы плоская мы версионирование отключаем.
+// Вторая опция включает в нашу схему два дополнительных свойства:
+//   время создания документа createdAt и
+//   время обновления updatedAt.
+// Причем Mongoose будет автоматически устанавливать эти поля при создании
+// и изменять поле updatedAt при каждом обновлении документа,
+// что согласитесь очень удобно.

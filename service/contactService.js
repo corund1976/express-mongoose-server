@@ -1,4 +1,4 @@
-import Contact from './contactSchema.js'
+import { Contact } from './contactSchema.js'
 
 const listContacts = () => {
   return Contact.find()

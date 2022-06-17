@@ -1,15 +1,16 @@
 import { Router } from 'express'
 
 import { getAll, getById, create, update, updateFavorite, remove } from '../controllers/contactControllers.js'
-import checkValidId from '../middlewares/checkValidId.js'
+import validateId from '../middlewares/validateId.js'
+import validateContact from '../middlewares/validateContact.js'
 
 const router = Router()
 
 router.get('/', getAll)
-router.get('/:id', checkValidId, getById)
-router.post('/', create)
-router.put('/:id', checkValidId, update)
-router.patch('/:id/favorite', checkValidId, updateFavorite)
-router.delete('/:id', checkValidId, remove)
+router.get('/:id', validateId, getById)
+router.post('/', validateContact, create)
+router.put('/:id', validateId, validateContact, update)
+router.patch('/:id/favorite', validateId, validateContact, updateFavorite)
+router.delete('/:id', validateId, remove)
 
 export default router

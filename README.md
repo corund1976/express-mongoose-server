@@ -18,14 +18,7 @@
 Правильный способ запустить приложение Express: "npm start"
 Чтобы развернуть приложение Express 4.x в Heroku, добавьте его в свой Procfile: "web: npm start"
 
-Последовательность установки
-npm init -y
-npm install --save-dev eslint eslint-plugin-node eslint-plugin-promise eslint-plugin-import
-npm install eslint-config-standard --save-dev
-npm i cross-env
-npm i express
-npm i nodemon -D
-npm i dotenv
-npm i morgan
-npm i cors
-npm i mongoose -S
+Последовательность установки:
+
+- npm init -y
+- npm i
