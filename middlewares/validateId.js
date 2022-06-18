@@ -1,8 +1,9 @@
 const validateId = (req, res, next) => {
   const { id } = req.params
-  const regExpObjID = /^[0-9a-fA-F]{24}$/
+  // const objId = /^[0-9a-fA-F]{24}$/
+  const objId = new RegExp(/^[0-9a-fA-F]{24}$/)
 
-  if (!id.match(regExpObjID)) {
+  if (!id.match(objId)) {
     return res
       .status(400)
       .json({

@@ -1,9 +1,16 @@
 import { User } from './userSchema.js';
 
-const createUser = async ({ username, email, password }, avatarURL, verificationToken) => {
-  const newUser = new User({ username, email, avatarURL, verificationToken })
-  newUser.setPassword(password)
-  return await newUser.save()
+const findUser = async (email) => {
+  return await User.findOne({ email })
 }
 
-export { createUser };
+const createUser = ({ username, email, password }) => {
+  const newUser = new User({ username, email })
+  newUser.setPassword(password)
+  return User.create(newUser)
+}
+
+export {
+  findUser,
+  createUser,
+};

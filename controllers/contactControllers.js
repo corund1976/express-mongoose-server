@@ -1,4 +1,11 @@
-import { listContacts, getContactById, addContact, updateContact, updateStatusContact, removeContact } from '../service/contactService.js'
+import {
+  listContacts,
+  getContactById,
+  addContact,
+  updateContact,
+  updateStatusContact,
+  removeContact
+} from '../service/contactService.js'
 
 const getAll = async (req, res, next) => {
   // ничего не получает
