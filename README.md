@@ -44,7 +44,7 @@ Represent models schemas and validation rules. There is no other logic **only mo
 ### Install global dependencies:
 
 ```
-npm i
+npm install
 ```
 
 ### Go ahead...
