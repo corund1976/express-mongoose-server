@@ -67,23 +67,25 @@ npm run dev // dev mode
 
 #### /auth
 
-| Path                 | Method | Description   |
-| -------------------- | ------ | ------------- |
-| /auth/signup         | POST   | SignUp        |
-| /auth/login          | POST   | LogIn         |
-| /auth/logout         | GET    | LogOut        |
-| /auth/refresh-tokens | POST   | RefreshTokens |
+| Path                 | Method | Description   | Access        |
+| -------------------- | ------ | ------------- | ------------- |
+| /auth/signup         | POST   | SignUp        | Public route  |
+| /auth/login          | POST   | LogIn         | Public route  |
+| /auth/logout         | GET    | LogOut        | Private route |
+| /auth/refresh-tokens | POST   | RefreshTokens | Private route |
 
 #### /users
 
-| Path                                  | Method | Description                |
-| ------------------------------------- | ------ | -------------------------- |
-| /users                                | GET    | ListUsers                  |
-| /users/current                        | GET    | GetCurrentUser             |
-| /users/:id                            | GET    | GetUserById                |
-| /users                                | POST   | CreateUser                 |
-| /users                                | PATCH  | UpdateUser                 |
-| /users/:id                            | DELETE | RemoveUser                 |
+| Path                                  | Method | Description                | Access        |
+| ------------------------------------- | ------ | -------------------------- | ------------- |
+| /users                                | GET    | ListUsers                  | Admin         |
+| /users/current                        | GET    | GetCurrentUser             | Authenticated |
+| /users/:id                            | GET    | GetUserById                | Admin         |
+| /users                                | POST   | CreateUser                 | Authenticated |
+| /users/subscription                   | PATCH  | UpdateCurrUserSubscription | Authenticated |
+| /users/:id                            | PATCH  | UpdateUserById             | Admin         |
+| /users/                               | DELETE | RemoveCurrentUser          | Authenticated |
+| /users/:id                            | DELETE | RemoveUserById             | Admin         |
 | /users/change-password                | POST   | ChangePassword             |
 | /users/send-reset-password-email      | POST   | SendResetPasswordEmail     |
 | /users/reset-password                 | POST   | ResetPassword              |
