@@ -4,26 +4,34 @@ import Joi from 'joi'
 
 const { Schema, model } = mongoose
 
-const userSchema = new Schema({
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
+const userSchema = new Schema(
+  {
+    email: {
+      type: String,
+      required: [true, 'Email is required'],
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: [true, 'Password is required'],
+    },
+    subscription: {
+      type: String,
+      enum: ["starter", "pro", "business"],
+      default: "starter"
+    },
+    role: {
+      type: String,
+      enum: ["admin", "user"],
+      default: "user"
+    },
+    token: {
+      type: String,
+      default: null,
+    },
   },
-  password: {
-    type: String,
-    required: [true, 'Password is required'],
-  },
-  subscription: {
-    type: String,
-    enum: ["starter", "pro", "business"],
-    default: "starter"
-  },
-  token: {
-    type: String,
-    default: null,
-  },
-})
+  { versionKey: false, timestamps: true },
+)
 
 userSchema.methods.setPassword = function (password) {
   this.password = bCrypt.hashSync(password, bCrypt.genSaltSync(6));
@@ -42,6 +50,8 @@ const userJoiSchema = Joi.object({
     .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
   subscription: Joi.string()
     .valid("starter", "pro", "business"),
+  role: Joi.string()
+    .valid("admin", "user"),
   token: [
     Joi.string(),
     Joi.number()

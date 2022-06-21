@@ -16,4 +16,4 @@ const validateId = (req, res, next) => {
   next()
 }
 
-export default validateId
+export { validateId }

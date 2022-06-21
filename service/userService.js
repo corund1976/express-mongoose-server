@@ -4,13 +4,14 @@ const findUserByEmail = async (email) => {
   return await User.findOne({ email })
 }
 
-const createUser = async ({ username, email, password }) => {
-  const newUser = new User({ username, email })
+const createUser = async (user) => {
+  const { email, password, subscription, role } = user
+  const newUser = new User({ email, subscription, role })
   newUser.setPassword(password)
   return await User.create(newUser)
 }
 
-const findUserByIdAndUpdate = async (id, update) => {
+const updateUser = async (id, update) => {
   return await User.findByIdAndUpdate(id, update, { new: true })
 }
 
@@ -18,9 +19,19 @@ const findUserById = async (id) => {
   return await User.findById(id)
 }
 
+const listUsers = async () => {
+  return await User.find()
+}
+
+const removeUser = async (id) => {
+  return await User.findByIdAndDelete(id)
+}
+
 export {
   findUserByEmail,
   createUser,
-  findUserByIdAndUpdate,
+  updateUser,
   findUserById,
+  listUsers,
+  removeUser
 }

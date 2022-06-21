@@ -1,16 +1,7 @@
 import { Router } from 'express'
 
-import auth from '../middlewares/authenticateToken.js'
-import validateId from '../middlewares/validateId.js'
-import validateContact from '../middlewares/validateContact.js'
-import {
-  getAll,
-  getById,
-  create,
-  update,
-  updateFavorite,
-  remove
-} from '../controllers/contactControllers.js'
+import { auth, validateId, validateContact } from '../middlewares/index.js'
+import { getAll, getById, create, update, updateFavorite, remove } from '../controllers/contactController.js'
 
 const router = Router()
 
@@ -21,4 +12,4 @@ router.put('/:id', auth, validateId, validateContact, update)
 router.patch('/:id/favorite', auth, validateId, validateContact, updateFavorite)
 router.delete('/:id', auth, validateId, remove)
 
-export default router
+export { router }

@@ -1,16 +1,16 @@
 import passport from 'passport';
 
-const auth = (req, res, next) => {
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'] || req.headers['Authorization']
+  const tokenFromHeader =
+    authHeader && authHeader.startsWith('Bearer ')
+      ? authHeader.replace('Bearer ', '')
+      : null
+
   passport.authenticate('jwt', { session: false }, (err, user) => {
+    const tokenFromDB = user?.token
 
-    const authHeader = req.headers['authorization'] || req.headers['Authorization']
-    const bearer = authHeader && authHeader.startsWith('Bearer ') ? authHeader : null
-    const token = bearer ? bearer.replace('Bearer ', '') : null
-
-    console.log(token);
-    console.log(user.token);
-
-    if (!user || err || token !== user.token) {
+    if (!user || err || tokenFromHeader !== tokenFromDB) {
       return res
         .status(401)
         .json({
@@ -19,10 +19,11 @@ const auth = (req, res, next) => {
           message: 'Unauthorized',
         });
     }
-
-    req.user = user;
+    // const { password, ...userWithoutPassword } = user
+    // req.user = userWithoutPassword
+    req.user = user
     next();
   })(req, res, next);
 }
 
-export default auth
+export { authenticateToken } 

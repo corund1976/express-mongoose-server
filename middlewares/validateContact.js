@@ -16,4 +16,4 @@ const validateContact = (req, res, next) => {
   next()
 }
 
-export default validateContact
+export { validateContact }

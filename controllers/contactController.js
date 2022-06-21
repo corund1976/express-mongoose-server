@@ -34,9 +34,9 @@ const getById = async (req, res, next) => {
   const { id } = req.params
 
   try {
-    const result = await getContactById(id)
+    const contactById = await getContactById(id)
 
-    if (!result) {
+    if (!contactById) {
       return res
         .status(404)
         .json({
@@ -51,7 +51,7 @@ const getById = async (req, res, next) => {
       .json({
         status: 'Ok',
         code: 200,
-        data: { contact: result },
+        data: { contactById },
       })
   } catch (e) {
     next(e)
@@ -98,9 +98,9 @@ const update = async (req, res, next) => {
   }
 
   try {
-    const result = await updateContact(id, req.body)
+    const updatedContact = await updateContact(id, req.body)
 
-    if (!result) {
+    if (!updatedContact) {
       return res
         .status(404)
         .json({
@@ -115,7 +115,7 @@ const update = async (req, res, next) => {
       .json({
         status: 'Ok',
         code: 200,
-        data: { contact: result }
+        data: { updatedContact }
       })
   } catch (e) {
     next(e)
