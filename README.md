@@ -95,12 +95,12 @@ npm run dev // dev mode
 | /users/resend-confirm-new-email-token | POST   | ResendConfirmNewEmailToken |
 | /users/cancel-email-changing          | POST   | CancelEmailChanging        |
 
-#### /posts
+#### /contacts
 
-| Path          | Method | Description    |
-| ------------- | ------ | -------------- |
-| /contacts     | GET    | ListContacts   |
-| /contacts/:id | GET    | GetContactById |
-| /contacts     | POST   | CreateContact  |
-| /contacts/:id | PATCH  | UpdateContact  |
-| /contacts/:id | DELETE | RemoveContact  |
+| Path          | Method | Description    | Access        |
+| ------------- | ------ | -------------- | ------------- |
+| /contacts     | GET    | ListContacts   | Private route |
+| /contacts/:id | GET    | GetContactById | Private route |
+| /contacts     | POST   | CreateContact  | Private route |
+| /contacts/:id | PATCH  | UpdateContact  | Private route |
+| /contacts/:id | DELETE | RemoveContact  | Private route |
