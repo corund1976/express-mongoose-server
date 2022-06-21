@@ -2,10 +2,12 @@ import express from 'express'
 import path from 'path'
 import morgan from 'morgan'
 import cors from 'cors'
-import "dotenv/config"
-import createError from 'http-errors'
+import 'dotenv/config'
+import passport from 'passport';
 
-import authRouter from './routes/authRouter.js'
+import passportConfig from './config/config-passport.js'
+
+import usersRouter from './routes/usersRouter.js'
 import contactRouter from './routes/contactRouter.js'
 
 const app = express()
@@ -16,14 +18,17 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 app.use(morgan(formatsLogger))
 app.use(cors())
 
-app.use(express.json());
+app.use(express.json())
+
+passportConfig(passport)
+app.use(passport.initialize());
 
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.get('/', (req, res) =>
   res.send('<h1>Hello Express</h1>')
 )
-app.use('/auth', authRouter)
+app.use('/users', usersRouter)
 app.use('/contacts', contactRouter)
 
 // catch 404 and forward to error handler
