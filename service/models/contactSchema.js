@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import Joi from 'joi'
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const { Schema, SchemaTypes, model } = mongoose
 
@@ -21,29 +21,17 @@ const contactSchema = new Schema(
     },
     owner: {
       type: SchemaTypes.ObjectId,
-      ref: 'User',
+      ref: 'user',
     },
   },
-  { versionKey: false, timestamps: true },
+  { versionKey: false, timestamps: false },
 )
 
-const Contact = model('Contact', contactSchema)
+contactSchema.plugin(mongoosePaginate)
 
-const contactJoiSchema = Joi.object({
-  name: Joi.string()
-    .alphanum()
-    .min(3)
-    .max(30),
-  email: Joi.string()
-    .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'ua'] } }),
-  phone: Joi.string()
-    .alphanum()
-    .min(3)
-    .max(30),
-  favorite: Joi.boolean(),
-})
+const Contact = model('contact', contactSchema)
 
-export { Contact, contactJoiSchema }
+export default Contact
 
 // { versionKey: false, timestamps: true }
 // Данные опции, отключают версионирование документов установкой значение

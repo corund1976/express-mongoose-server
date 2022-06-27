@@ -1,15 +1,15 @@
 import { Router } from 'express'
 
 import { auth, validateId, validateContact } from '../middlewares/index.js'
-import { getAll, getById, create, update, updateFavorite, remove } from '../controllers/contactController.js'
+import contactCtrl from '../controllers/contactController.js'
 
 const router = Router()
 
-router.get('/', auth, getAll)
-router.get('/:id', auth, validateId, getById)
-router.post('/', auth, validateContact, create)
-router.put('/:id', auth, validateId, validateContact, update)
-router.patch('/:id/favorite', auth, validateId, validateContact, updateFavorite)
-router.delete('/:id', auth, validateId, remove)
+router.get('/', auth, contactCtrl.getAll)
+router.get('/:id', auth, validateId, contactCtrl.getById)
+router.post('/', auth, validateContact, contactCtrl.create)
+router.put('/:id', auth, validateId, validateContact, contactCtrl.update)
+router.patch('/:id/favorite', auth, validateId, validateContact, contactCtrl.updateFavorite)
+router.delete('/:id', auth, validateId, contactCtrl.remove)
 
 export { router }

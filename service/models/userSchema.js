@@ -1,6 +1,5 @@
 import mongoose from 'mongoose'
 import bCrypt from 'bcryptjs'
-import Joi from 'joi'
 
 const { Schema, model } = mongoose
 
@@ -25,12 +24,16 @@ const userSchema = new Schema(
       enum: ["admin", "user"],
       default: "user"
     },
-    token: {
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
       type: String,
-      default: null,
+      // required: [true, 'Verify token is required'],
     },
   },
-  { versionKey: false, timestamps: true },
+  { versionKey: false, timestamps: false },
 )
 
 userSchema.methods.setPassword = function (password) {
@@ -41,21 +44,6 @@ userSchema.methods.validPassword = function (password) {
   return bCrypt.compareSync(password, this.password);
 };
 
-const User = model('User', userSchema)
+const User = model('user', userSchema)
 
-const userJoiSchema = Joi.object({
-  email: Joi.string()
-    .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net', 'ua'] } }),
-  password: Joi.string()
-    .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
-  subscription: Joi.string()
-    .valid("starter", "pro", "business"),
-  role: Joi.string()
-    .valid("admin", "user"),
-  token: [
-    Joi.string(),
-    Joi.number()
-  ],
-})
-
-export { User, userJoiSchema }
+export default User

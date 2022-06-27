@@ -1,8 +1,10 @@
-import { listUsers, updateUser, findUserById, removeUser } from '../service/userService.js'
+import userService from '../service/userService.js'
+import ApiError from '../exceptions/apiError.js'
 
 const getAll = async (req, res, next) => {
   try {
-    const listAllUsers = await listUsers()
+    const listAllUsers = await userService.listUsers()
+
     if (listAllUsers) {
       return res
         .status(200)
@@ -21,7 +23,7 @@ const getById = async (req, res, next) => {
   const { id } = req.params
 
   try {
-    const userById = await findUserById(id)
+    const userById = await userService.getById(id)
 
     if (!userById) {
       return res
@@ -69,29 +71,29 @@ const getCurrent = (req, res, next) => {
 
 const update = async (req, res, next) => {
   if (Object.keys(req.body) == 0) {
-    return res
-      .status(400)
-      .json({
-        status: 'Bad request',
-        code: 400,
-        message: 'Missing fields',
-      })
+    // return res
+    //   .status(400)
+    //   .json({
+    //     status: 'Bad request',
+    //     code: 400,
+    //     message: 'Missing fields',
+    //   })
+    throw ApiError.BadRequest('Missing fields')
   }
+
   try {
-    const updatedUser = await updateUser(req.params.id, req.body)
+    const updatedUser = await userService.update(req.params.id, req.body)
 
     if (updatedUser) {
+      const { id: _id, subscription, role } = updatedUser
+
       return res
         .status(200)
         .json({
           status: 'Ok',
           code: 200,
           data: {
-            updatedUser: {
-              id: updatedUser._id,
-              subscription: updatedUser.subscription,
-              role: updatedUser.role,
-            }
+            updatedUser: { id, subscription, role, }
           }
         })
     }
@@ -103,30 +105,29 @@ const update = async (req, res, next) => {
 const updateCurrentUserSubscription = async (req, res, next) => {
   if (!('subscription' in req.body)) {
     // if (Object.keys(req.body) != 'subscription') {
-    return res
-      .status(400)
-      .json({
-        status: 'Bad request',
-        code: 400,
-        message: 'Missing fields',
-      })
+    // return res
+    //   .status(400)
+    //   .json({
+    //     status: 'Bad request',
+    //     code: 400,
+    //     message: 'Missing fields',
+    //   })
+    throw ApiError.BadRequest('Missing field Subscription')
   }
 
   try {
-    const updatedUser = await updateUser(req.user.id, req.body)
+    const updatedUser = await userService.update(req.user.id, req.body)
 
     if (updatedUser) {
+      const { id: _id, subscription, role } = updatedUser
+
       return res
         .status(200)
         .json({
           status: 'Ok',
           code: 200,
           data: {
-            updatedUser: {
-              id: updatedUser._id,
-              subscription: updatedUser.subscription,
-              role: updatedUser.role,
-            }
+            updatedUser: { id, subscription, role, }
           }
         })
     }
@@ -139,16 +140,17 @@ const remove = async (req, res, next) => {
   const id = req.params.id ? req.params.id : req.user.id
 
   try {
-    const result = await removeUser(id)
+    const result = await userService.remove(id)
 
     if (!result) {
-      return res
-        .status(404)
-        .json({
-          status: 'Not found',
-          code: 404,
-          message: `Not found user id: ${id}`
-        })
+      // return res
+      //   .status(404)
+      //   .json({
+      //     status: 'Not found',
+      //     code: 404,
+      //     message: `Not found user id: ${id}`
+      //   })
+      throw ApiError.NotFound(`Not found user id: ${id}`)
     }
 
     res
@@ -163,7 +165,7 @@ const remove = async (req, res, next) => {
   }
 }
 
-export {
+export default {
   getAll,
   getById,
   getCurrent,

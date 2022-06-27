@@ -1,26 +1,12 @@
-import jwt from 'jsonwebtoken'
-
-import { findUserByEmail, createUser, updateUser } from '../service/userService.js'
+import ApiError from '../exceptions/apiError.js'
+import authService from '../service/authService.js'
 
 const signup = async (req, res, next) => {
   try {
-    const { email } = req.body
-    const user = await findUserByEmail(email)
-
-    if (user) {
-      return res
-        .status(409)
-        .json({
-          status: 'Conflict',
-          code: 409,
-          message: `Email ${email} is already in use`
-        })
-    }
-
-    const newUser = await createUser(req.body)
+    const newUser = await authService.signup(req.body)
 
     if (newUser) {
-      res
+      return res
         .status(201)
         .json({
           status: 'Created',
@@ -36,39 +22,22 @@ const signup = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body
-    const user = await findUserByEmail(email)
+    const user = await authService.login(req.body)
 
-    if (!user || !user.validPassword(password)) {
+    if (user) {
+      res.cookie(
+        'refreshToken',
+        user.refreshToken,
+        { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+
       return res
-        .status(401)
+        .status(200)
         .json({
-          status: 'Unauthorized',
-          code: 401,
-          message: 'Email or password is wrong'
+          status: 'Ok',
+          code: 200,
+          data: user
         })
     }
-
-    const payload = { id: user._id, role: user.role };
-    const secret = process.env.JWT_SECRET;
-    const token = jwt.sign(payload, secret, { expiresIn: '30m' });
-
-    const userWithToken = await updateUser(user._id, { token })
-
-    return res
-      .status(200)
-      .json({
-        status: 'Ok',
-        code: 200,
-        data: {
-          token: userWithToken.token,
-          user: {
-            email: userWithToken.email,
-            subscription: userWithToken.subscription,
-            role: userWithToken.role,
-          }
-        }
-      })
   } catch (e) {
     next(e)
   }
@@ -76,7 +45,9 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   try {
-    await updateUser(req.user.id, { token: null })
+    await authService.logout(req.user.id)
+    res.clearCookie('refreshToken')
+
     return res
       .status(204)
       .json({
@@ -88,8 +59,52 @@ const logout = async (req, res, next) => {
   }
 }
 
-export {
+const verify = async (req, res, next) => {
+  try {
+    const user = await authService.verify(req.params)
+
+    if (user) {
+      return res
+        .status(200)
+        .json({
+          status: 'Ok',
+          code: 200,
+          message: 'Verification successful'
+        })
+      // return res.redirect(process.env.CLIENT_URL)
+    }
+  } catch (e) {
+    next(e)
+  }
+}
+
+const refresh = async (req, res, next) => {
+  try {
+    const user = await authService.refresh(req.cookies)
+
+    if (user) {
+      res.cookie(
+        'refreshToken',
+        user.refreshToken,
+        { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
+
+      return res
+        .status(200)
+        .json({
+          status: 'Ok',
+          code: 200,
+          data: user
+        })
+    }
+  } catch (e) {
+    next(e)
+  }
+}
+
+export default {
   signup,
   login,
   logout,
+  verify,
+  refresh
 }

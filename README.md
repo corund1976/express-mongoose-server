@@ -67,12 +67,13 @@ npm run dev // dev mode
 
 #### /auth
 
-| Path                 | Method | Description   | Access        |
-| -------------------- | ------ | ------------- | ------------- |
-| /auth/signup         | POST   | SignUp        | Public route  |
-| /auth/login          | POST   | LogIn         | Public route  |
-| /auth/logout         | GET    | LogOut        | Private route |
-| /auth/refresh-tokens | POST   | RefreshTokens | Private route |
+| Path                 | Method | Description     | Access        |
+| -------------------- | ------ | --------------- | ------------- |
+| /auth/signup         | POST   | SignUp          | Public route  |
+| /auth/login          | POST   | LogIn           | Public route  |
+| /auth/logout         | GET    | LogOut          | Private route |
+| /auth/activate/:link | GET    | Activation Lonk | Private route |
+| /auth/refresh-tokens | GET    | Refresh Tokens  | Private route |
 
 #### /users
 
@@ -97,10 +98,11 @@ npm run dev // dev mode
 
 #### /contacts
 
-| Path          | Method | Description    | Access        |
-| ------------- | ------ | -------------- | ------------- |
-| /contacts     | GET    | ListContacts   | Private route |
-| /contacts/:id | GET    | GetContactById | Private route |
-| /contacts     | POST   | CreateContact  | Private route |
-| /contacts/:id | PATCH  | UpdateContact  | Private route |
-| /contacts/:id | DELETE | RemoveContact  | Private route |
+| Path                   | Method | Description                 | Access        |
+| ---------------------- | ------ | --------------------------- | ------------- |
+| /contacts              | GET    | ListContacts                | Private route |
+| /contacts/:id          | GET    | GetContactById              | Private route |
+| /contacts              | POST   | CreateContact               | Private route |
+| /contacts/:id          | PUT    | UpdateContact               | Private route |
+| /contacts/:id/favorite | PATCH  | UpdateContactStatusFavorite | Private route |
+| /contacts/:id          | DELETE | RemoveContact               | Private route |

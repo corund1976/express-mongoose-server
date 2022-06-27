@@ -12,7 +12,7 @@ const getAll = async (req, res, next) => {
   // вызывает функцию listContacts
   // возвращает массив всех контактов в json - формате со статусом 200
   try {
-    const result = await listContacts()
+    const result = await listContacts(req.query, req.user.id)
 
     res
       .status(200)
@@ -31,10 +31,8 @@ const getById = async (req, res, next) => {
   // вызывает функцию getById
   // если такой id есть, возвращает объект контакта в json - формате со статусом 200
   // если такого id нет, возвращает json с ключом "message": "Not found" и статусом 404
-  const { id } = req.params
-
   try {
-    const contactById = await getContactById(id)
+    const contactById = await getContactById(req.params.id, req.user.id)
 
     if (!contactById) {
       return res
@@ -42,7 +40,7 @@ const getById = async (req, res, next) => {
         .json({
           status: 'Not found',
           code: 404,
-          message: `Not found contact id: ${id}`,
+          message: `Not found contact id: ${req.params.id}`,
         })
     }
 
@@ -64,7 +62,7 @@ const create = async (req, res, next) => {
   // Вызывает функцию addContact(body) для сохранения контакта 
   // По результату работы функции возвращает объект с добавленным id { id, name, email, phone } и статусом 201
   try {
-    const result = await addContact(req.body)
+    const result = await addContact(req.body, req.user.id)
 
     res
       .status(201)
@@ -85,8 +83,6 @@ const update = async (req, res, next) => {
   // Если с body все хорошо, вызывает функцию updateContact(contactId, body)(напиши ее) для обновления контакта в файле contacts.json
   // По результату работы функции возвращает обновленный объект контакта и статусом 200. 
   // В противном случае, возвращает json с ключом "message": "Not found" и статусом 404
-  const { id } = req.params
-
   if (Object.keys(req.body) == 0) {
     return res
       .status(400)
@@ -98,7 +94,7 @@ const update = async (req, res, next) => {
   }
 
   try {
-    const updatedContact = await updateContact(id, req.body)
+    const updatedContact = await updateContact(req.params.id, req.user.id, req.body)
 
     if (!updatedContact) {
       return res
@@ -106,7 +102,7 @@ const update = async (req, res, next) => {
         .json({
           status: 'Not found',
           code: 404,
-          message: `Contact id: ${id} not found`,
+          message: `Contact id: ${req.params.id} not found`,
         })
     }
 
@@ -141,7 +137,7 @@ const updateFavorite = async (req, res, next) => {
   }
 
   try {
-    const result = await updateStatusContact(req.params.id, req.body)
+    const result = await updateStatusContact(req.params.id, req.user.id, req.body)
 
     if (!result) {
       return res
@@ -170,10 +166,8 @@ const remove = async (req, res, next) => {
   // вызывает функцию removeContact 
   // если такой id есть, возвращает json формата { "message": "contact deleted" } и статусом 200
   // если такого id нет, возвращает json с ключом "message": "Not found" и статусом 404
-  const { id } = req.params
-
   try {
-    const result = await removeContact(id)
+    const result = await removeContact(req.params.id, req.user.id)
 
     if (!result) {
       return res
@@ -181,7 +175,7 @@ const remove = async (req, res, next) => {
         .json({
           status: 'Not found',
           code: 404,
-          message: `Not found contact id: ${id}`
+          message: `Not found contact id: ${req.params.id}`
         })
     }
 
@@ -190,7 +184,7 @@ const remove = async (req, res, next) => {
       .json({
         status: 'Ok',
         code: 200,
-        message: `Contact id: ${id} deleted`
+        message: `Contact id: ${req.params.id} deleted`
       })
   } catch (e) {
     next(e)
@@ -198,7 +192,7 @@ const remove = async (req, res, next) => {
 }
 // Для маршрутов, что принимают данные(POST и PUT), продумайте проверку(валидацию) 
 // принимаемых данных.Для валидации принимаемых данных используйте пакет joi
-export {
+export default {
   getAll,
   getById,
   create,

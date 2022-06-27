@@ -1,27 +1,46 @@
-import { Contact } from './contactSchema.js'
+import Contact from './models/contactSchema.js'
 
-const listContacts = async () => {
-  return await Contact.find()
+const listContacts = async (query, userId) => {
+  const { page = 1, limit = 5, favorite } = query
+  const queryCriteria = favorite ? { owner: userId, favorite } : { owner: userId }
+  const result = await Contact.paginate(
+    queryCriteria,
+    { page, limit }
+  )
+  return result.docs
 }
 
-const getContactById = async (contactId) => {
-  return await Contact.findById(contactId)
+const getContactById = async (contactId, userId) => {
+  return await Contact.findOne({ _id: contactId, owner: userId })
 }
 
-const addContact = async ({ name, email, phone }) => {
-  return await Contact.create({ name, email, phone })
+const addContact = async (newContact, userId) => {
+  const { name, email, phone } = newContact
+  return await Contact.create(
+    { name, email, phone, owner: userId }
+  )
 }
 
-const updateContact = async (contactId, update) => {
-  return await Contact.findByIdAndUpdate(contactId, update, { new: true })
+const updateContact = async (contactId, userId, update) => {
+  return await Contact.findOneAndUpdate(
+    { _id: contactId, owner: userId },
+    update,
+    { new: true }
+  )
 }
 
-const updateStatusContact = async (contactId, favoriteUpdate) => {
-  return await Contact.findByIdAndUpdate(contactId, favoriteUpdate, { new: true })
+const updateStatusContact = async (contactId, userId, favoriteUpdate) => {
+  return await Contact.findOneAndUpdate(
+    { _id: contactId, owner: userId },
+    favoriteUpdate,
+    { new: true }
+  )
 }
 
-const removeContact = async (contactId) => {
-  return await Contact.findByIdAndRemove(contactId);
+const removeContact = async (contactId, userId) => {
+  return await Contact.findOneAndRemove(
+    { _id: contactId, owner: userId }
+  )
 }
 
 export {
