@@ -1,24 +1,25 @@
-import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
+import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt'
 
-import User from '../service/models/userSchema.js';
+import User from '../service/models/userSchema.js'
+import UserDto from '../dtos/userDto.js'
 
 const passportConfig = (passport) => {
   const params = {
     secretOrKey: process.env.JWT_ACCESS_SECRET,
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  };
+  }
 
   passport.use(
     new JWTStrategy(params, function (payload, done) {
-      // console.log('payload === ', payload);
       User.find({ _id: payload.id })
         .then(([user]) => {
           if (!user) {
             return done(new Error('User not found'));
           }
-          return done(null, user);
+          const userDto = new UserDto(user)
+          return done(null, { ...userDto })
         })
-        .catch(err => done(err));
+        .catch(err => done(err))
     }),
   )
 }

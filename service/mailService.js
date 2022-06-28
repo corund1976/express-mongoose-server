@@ -25,7 +25,7 @@ const sendVerifyMail = async (to, link) => {
         </div>`
   }
 
-  await transporter.sendMail(emailOptions)
+  return await transporter.sendMail(emailOptions)
 }
 
 export default sendVerifyMail

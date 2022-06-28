@@ -1,5 +1,4 @@
 import userService from '../service/userService.js'
-import ApiError from '../exceptions/apiError.js'
 
 const getAll = async (req, res, next) => {
   try {
@@ -48,21 +47,16 @@ const getById = async (req, res, next) => {
 }
 
 const getCurrent = (req, res, next) => {
+  console.log('req.user = ', req.user);
   try {
-    const { email, subscription, role } = req.user
+    const currentUser = req.user
 
     return res
       .status(200)
       .json({
         code: 200,
         status: 'ok',
-        data: {
-          currentUser: {
-            email,
-            subscription,
-            role,
-          }
-        }
+        data: { currentUser }
       })
   } catch (e) {
     next(e)
@@ -71,14 +65,13 @@ const getCurrent = (req, res, next) => {
 
 const update = async (req, res, next) => {
   if (Object.keys(req.body) == 0) {
-    // return res
-    //   .status(400)
-    //   .json({
-    //     status: 'Bad request',
-    //     code: 400,
-    //     message: 'Missing fields',
-    //   })
-    throw ApiError.BadRequest('Missing fields')
+    return res
+      .status(400)
+      .json({
+        status: 'Bad request',
+        code: 400,
+        message: 'Missing fields',
+      })
   }
 
   try {
@@ -105,14 +98,13 @@ const update = async (req, res, next) => {
 const updateCurrentUserSubscription = async (req, res, next) => {
   if (!('subscription' in req.body)) {
     // if (Object.keys(req.body) != 'subscription') {
-    // return res
-    //   .status(400)
-    //   .json({
-    //     status: 'Bad request',
-    //     code: 400,
-    //     message: 'Missing fields',
-    //   })
-    throw ApiError.BadRequest('Missing field Subscription')
+    return res
+      .status(400)
+      .json({
+        status: 'Bad request',
+        code: 400,
+        message: 'Missing field *Subscription*',
+      })
   }
 
   try {
@@ -143,14 +135,13 @@ const remove = async (req, res, next) => {
     const result = await userService.remove(id)
 
     if (!result) {
-      // return res
-      //   .status(404)
-      //   .json({
-      //     status: 'Not found',
-      //     code: 404,
-      //     message: `Not found user id: ${id}`
-      //   })
-      throw ApiError.NotFound(`Not found user id: ${id}`)
+      return res
+        .status(404)
+        .json({
+          status: 'Not found',
+          code: 404,
+          message: `Not found user id: ${id}`
+        })
     }
 
     res

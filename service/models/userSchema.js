@@ -28,7 +28,7 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    verificationToken: {
+    verifyToken: {
       type: String,
       // required: [true, 'Verify token is required'],
     },

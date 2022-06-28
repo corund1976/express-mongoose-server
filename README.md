@@ -67,42 +67,40 @@ npm run dev // dev mode
 
 #### /auth
 
-| Path                 | Method | Description     | Access        |
-| -------------------- | ------ | --------------- | ------------- |
-| /auth/signup         | POST   | SignUp          | Public route  |
-| /auth/login          | POST   | LogIn           | Public route  |
-| /auth/logout         | GET    | LogOut          | Private route |
-| /auth/activate/:link | GET    | Activation Lonk | Private route |
-| /auth/refresh-tokens | GET    | Refresh Tokens  | Private route |
+| Path                      | Method | Description       | Access        |
+| ------------------------- | ------ | ----------------- | ------------- |
+| /auth/signup              | POST   | SignUp            | Public route  |
+| /auth/login               | POST   | LogIn             | Public route  |
+| /auth/logout              | GET    | LogOut            | Private route |
+| /auth/verify/:verifyToken | GET    | Activation Link   | Public route  |
+| /auth/verify/             | POST   | Resend Activation | Public route  |
+| /auth/refresh             | GET    | Refresh Tokens    | Private route |
 
 #### /users
 
-| Path                                  | Method | Description                | Access        |
-| ------------------------------------- | ------ | -------------------------- | ------------- |
-| /users                                | GET    | ListUsers                  | Admin         |
-| /users/current                        | GET    | GetCurrentUser             | Authenticated |
-| /users/:id                            | GET    | GetUserById                | Admin         |
-| /users                                | POST   | CreateUser                 | Authenticated |
-| /users/subscription                   | PATCH  | UpdateCurrUserSubscription | Authenticated |
-| /users/:id                            | PATCH  | UpdateUserById             | Admin         |
-| /users/                               | DELETE | RemoveCurrentUser          | Authenticated |
-| /users/:id                            | DELETE | RemoveUserById             | Admin         |
-| /users/change-password                | POST   | ChangePassword             |
-| /users/send-reset-password-email      | POST   | SendResetPasswordEmail     |
-| /users/reset-password                 | POST   | ResetPassword              |
-| /users/confirm-registration           | POST   | ConfirmRegistration        |
-| /users/change-email                   | POST   | ChangeEmail                |
-| /users/confirm-email                  | POST   | ConfirmEmail               |
-| /users/resend-confirm-new-email-token | POST   | ResendConfirmNewEmailToken |
-| /users/cancel-email-changing          | POST   | CancelEmailChanging        |
+| Path                             | Method | Description                | Access        |
+| -------------------------------- | ------ | -------------------------- | ------------- |
+| /users                           | GET    | List Users                 | Admin         |
+| /users/current                   | GET    | Get Current User           | Authenticated |
+| /users/:id                       | GET    | Get User By Id             | Admin         |
+| /users                           | POST   | Create User                | Authenticated |
+| /users/subscription              | PATCH  | UpdateCurrUserSubscription | Authenticated |
+| /users/:id                       | PATCH  | Update User By Id          | Admin         |
+| /users/                          | DELETE | Remove Current User        | Authenticated |
+| /users/:id                       | DELETE | Remove User By Id          | Admin         |
+| /users/change-password           | POST   | Change Password            |
+| /users/send-reset-password-email | POST   | SendResetPasswordEmail     |
+| /users/reset-password            | POST   | Reset Password             |
+| /users/change-email              | POST   | Change Email               |
+| /users/cancel-email-changing     | POST   | Cancel Email Changing      |
 
 #### /contacts
 
-| Path                   | Method | Description                 | Access        |
-| ---------------------- | ------ | --------------------------- | ------------- |
-| /contacts              | GET    | ListContacts                | Private route |
-| /contacts/:id          | GET    | GetContactById              | Private route |
-| /contacts              | POST   | CreateContact               | Private route |
-| /contacts/:id          | PUT    | UpdateContact               | Private route |
-| /contacts/:id/favorite | PATCH  | UpdateContactStatusFavorite | Private route |
-| /contacts/:id          | DELETE | RemoveContact               | Private route |
+| Path                   | Method | Description            | Access        |
+| ---------------------- | ------ | ---------------------- | ------------- |
+| /contacts              | GET    | List Contacts          | Private route |
+| /contacts/:id          | GET    | Get Contact By Id      | Private route |
+| /contacts              | POST   | Create Contact         | Private route |
+| /contacts/:id          | PUT    | Update Contact         | Private route |
+| /contacts/:id/favorite | PATCH  | Update Status Favorite | Private route |
+| /contacts/:id          | DELETE | Remove Contact         | Private route |

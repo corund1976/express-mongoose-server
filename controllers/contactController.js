@@ -1,25 +1,18 @@
-import {
-  listContacts,
-  getContactById,
-  addContact,
-  updateContact,
-  updateStatusContact,
-  removeContact
-} from '../service/contactService.js'
+import contactService from '../service/contactService.js'
 
 const getAll = async (req, res, next) => {
   // ничего не получает
   // вызывает функцию listContacts
   // возвращает массив всех контактов в json - формате со статусом 200
   try {
-    const result = await listContacts(req.query, req.user.id)
+    const contacts = await contactService.list(req.query, req.user.id)
 
-    res
+    return res
       .status(200)
       .json({
         status: 'Ok',
         code: 200,
-        data: { contacts: result }
+        data: { contacts }
       })
   } catch (e) {
     next(e)
@@ -32,7 +25,7 @@ const getById = async (req, res, next) => {
   // если такой id есть, возвращает объект контакта в json - формате со статусом 200
   // если такого id нет, возвращает json с ключом "message": "Not found" и статусом 404
   try {
-    const contactById = await getContactById(req.params.id, req.user.id)
+    const contactById = await contactService.getById(req.params.id, req.user.id)
 
     if (!contactById) {
       return res
@@ -62,7 +55,7 @@ const create = async (req, res, next) => {
   // Вызывает функцию addContact(body) для сохранения контакта 
   // По результату работы функции возвращает объект с добавленным id { id, name, email, phone } и статусом 201
   try {
-    const result = await addContact(req.body, req.user.id)
+    const result = await contactService.add(req.body, req.user.id)
 
     res
       .status(201)
@@ -94,7 +87,7 @@ const update = async (req, res, next) => {
   }
 
   try {
-    const updatedContact = await updateContact(req.params.id, req.user.id, req.body)
+    const updatedContact = await contactService.update(req.params.id, req.user.id, req.body)
 
     if (!updatedContact) {
       return res
@@ -137,7 +130,7 @@ const updateFavorite = async (req, res, next) => {
   }
 
   try {
-    const result = await updateStatusContact(req.params.id, req.user.id, req.body)
+    const result = await contactService.updateStatus(req.params.id, req.user.id, req.body)
 
     if (!result) {
       return res
@@ -167,7 +160,7 @@ const remove = async (req, res, next) => {
   // если такой id есть, возвращает json формата { "message": "contact deleted" } и статусом 200
   // если такого id нет, возвращает json с ключом "message": "Not found" и статусом 404
   try {
-    const result = await removeContact(req.params.id, req.user.id)
+    const result = await contactService.remove(req.params.id, req.user.id)
 
     if (!result) {
       return res

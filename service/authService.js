@@ -2,11 +2,11 @@ import { v4 } from 'uuid'
 
 import User from './models/userSchema.js'
 import UserDto from '../dtos/userDto.js'
-import ApiError from '../exceptions/apiError.js'
 import sendVerifyMail from './mailService.js'
 import tokenService from './tokenService.js'
+import ApiError from '../exceptions/apiError.js'
 
-const signup = async ({ email, password, subscription, role }) => {
+const signup = async (email, password) => {
   const candidate = await User.findOne({ email })
 
   if (candidate) {
@@ -14,29 +14,34 @@ const signup = async ({ email, password, subscription, role }) => {
   }
 
   const verificationToken = v4()
+  const user = new User({ email, verificationToken })
+  user.setPassword(password)
+  const newUser = await user.save()
+
   const link = `${process.env.API_URL}/auth/verify/${verificationToken}`
   await sendVerifyMail(email, link)
-
-  const user = new User({ email, subscription, role, verificationToken })
-  user.setPassword(password)
-  const newUser = await User.create(user)
 
   const userDto = new UserDto(newUser)
   return userDto
 }
 
-const login = async ({ email, password }) => {
+const login = async (email, password) => {
   const user = await User.findOne({ email })
 
   if (!user || !user.validPassword(password)) {
-    throw ApiError.Unauthorized(`Email or password is wrong`)
+    throw ApiError.BadRequest(`Email or password is wrong`)
+  }
+
+  if (!user.verified) {
+    throw ApiError.Unauthorized(`Email is not yet verified`)
   }
 
   const userDto = new UserDto(user)
 
   const payload = { ...userDto };
   const tokens = tokenService.generate(payload)
-  await tokenService.save(user._id, tokens.accessToken, tokens.refreshToken)
+
+  await tokenService.save(user._id, tokens.refreshToken)
 
   return { ...tokens, user: userDto }
 }
@@ -45,7 +50,7 @@ const logout = async (userId) => {
   return await tokenService.remove(userId)
 }
 
-const verify = async ({ verificationToken }) => {
+const verify = async (verificationToken) => {
   const user = await User.findOne({ verificationToken })
 
   if (!user) {
@@ -58,16 +63,29 @@ const verify = async ({ verificationToken }) => {
   return await user.save()
 }
 
-const refresh = async ({ refreshToken }) => {
+const resend = async (email) => {
+  const user = await User.findOne({ email })
+  const { verified, verifyToken } = user
+
+  if (verified) {
+    throw ApiError.BadRequest('Verification has already been passed')
+  }
+
+  const link = `${process.env.API_URL}/auth/verify/${verifyToken}`
+
+  return await sendVerifyMail(email, link)
+}
+
+const refresh = async (refreshToken) => {
   if (!refreshToken) {
     throw ApiError.Unauthorized('Нет рефреш-токена в куках')
   }
-
-  const userDataFromToken = tokenService.validate(refreshToken, process.env.JWT_REFRESH_SECRET)
+  // Передаю токен как обьект, чтобы по ключу определить каким секретом пользоваться для валидации
+  const userDataFromToken = tokenService.validate({ refreshToken })
   const tokenDataFromDB = tokenService.search(refreshToken)
-  // Проверка что и валидация , и поиск в БД прошли успешно
+  // Проверка что и валидация, и поиск в БД прошли успешно
   if (!userDataFromToken || !tokenDataFromDB) {
-    throw ApiError.Unauthorized('Неавторизован')
+    throw ApiError.Unauthorized('Валидация / поиск токена в БД прошли неуспешно')
   }
   // Вытащим из БД "свежего" пользователя, т.к. за 60 дней мог "устареть"
   const user = await User.findById(userDataFromToken.id)
@@ -76,7 +94,7 @@ const refresh = async ({ refreshToken }) => {
 
   const payload = { ...userDto };
   const tokens = tokenService.generate(payload)
-  await tokenService.save(user.id, tokens.accessToken, tokens.refreshToken)
+  await tokenService.save(user.id, tokens.refreshToken)
 
   return { ...tokens, user: userDto }
 }
@@ -86,5 +104,6 @@ export default {
   login,
   logout,
   verify,
+  resend,
   refresh
 }

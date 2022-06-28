@@ -16,26 +16,31 @@ const generate = (payload) => {
   return { accessToken, refreshToken }
 }
 
-const save = async (userId, accessToken, refreshToken) => {
-  const user = await Token.findById(userId)
+const save = async (userId, refreshToken) => {
+  const user = await Token.findOne({ userId })
 
-  if (user) {
-    user.accessToken = accessToken
-    user.refreshToken = refreshToken
-
-    return await user.save()
+  if (!user) {
+    return await Token.create({ userId, refreshToken })
   }
 
-  return await Token.create({ userId, accessToken, refreshToken })
+  user.refreshToken = refreshToken
+  return await user.save()
 }
 
 const remove = async (userId) => {
   return await Token.deleteOne({ userId })
 }
 
-const validate = (token, secret) => {
+const validate = (token) => {
+  const secret =
+    ('accessToken' in token)
+      ? process.env.JWT_ACCESS_SECRET
+      : process.env.JWT_REFRESH_SECRET
+
+  const [tokenValue] = Object.values(token)
+
   try {
-    const tokenData = jwt.verify(token, secret)
+    const tokenData = jwt.verify(tokenValue, secret)
     return tokenData
   } catch (e) {
     return null
