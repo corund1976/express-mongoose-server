@@ -1,4 +1,5 @@
 import userService from '../service/userService.js'
+import UserDto from '../dtos/userDto.js'
 
 const getAll = async (req, res, next) => {
   try {
@@ -10,7 +11,7 @@ const getAll = async (req, res, next) => {
         .json({
           status: 'ok',
           code: 200,
-          data: listAllUsers,
+          data: listAllUsers
         })
     }
   } catch (e) {
@@ -30,7 +31,7 @@ const getById = async (req, res, next) => {
         .json({
           status: 'Not found',
           code: 404,
-          message: `Not found contact id: ${id}`,
+          message: `Not found contact id: ${id}`
         })
     }
 
@@ -39,7 +40,7 @@ const getById = async (req, res, next) => {
       .json({
         status: 'Ok',
         code: 200,
-        data: { userById },
+        data: { userById }
       })
   } catch (e) {
     next(e)
@@ -47,7 +48,6 @@ const getById = async (req, res, next) => {
 }
 
 const getCurrent = (req, res, next) => {
-  console.log('req.user = ', req.user);
   try {
     const currentUser = req.user
 
@@ -77,17 +77,52 @@ const update = async (req, res, next) => {
   try {
     const updatedUser = await userService.update(req.params.id, req.body)
 
-    if (updatedUser) {
-      const { id: _id, subscription, role } = updatedUser
+    if (!updatedUser) {
+      return res
+        .status(404)
+        .json({
+          status: 'Not found',
+          code: 404,
+          message: `Not found contact id: ${id}`,
+        })
+    }
+
+    return res
+      .status(200)
+      .json({
+        status: 'Ok',
+        code: 200,
+        data: { updatedUser }
+      })
+  } catch (e) {
+    next(e)
+  }
+}
+
+const updateSubscription = async (req, res, next) => {
+  if (!('subscription' in req.body) // (Object.keys(req.body) != 'subscription')
+    || Object.keys(req.body).length > 1) {
+    return res
+      .status(400)
+      .json({
+        status: 'Bad request',
+        code: 400,
+        message: 'Missing field *Subscription* / Another fields not allowed',
+      })
+  }
+
+  try {
+    const user = await userService.update(req.user.id, req.body)
+
+    if (user) {
+      const updatedUser = new UserDto(user)
 
       return res
         .status(200)
         .json({
           status: 'Ok',
           code: 200,
-          data: {
-            updatedUser: { id, subscription, role, }
-          }
+          data: { updatedUser }
         })
     }
   } catch (e) {
@@ -95,32 +130,33 @@ const update = async (req, res, next) => {
   }
 }
 
-const updateCurrentUserSubscription = async (req, res, next) => {
-  if (!('subscription' in req.body)) {
-    // if (Object.keys(req.body) != 'subscription') {
-    return res
-      .status(400)
-      .json({
-        status: 'Bad request',
-        code: 400,
-        message: 'Missing field *Subscription*',
-      })
-  }
+const updateAvatar = async (req, res, next) => {
+  const { id } = req.user
+  const { filename } = req.file
+  // req.file = {
+  //   fieldname: 'avatar',
+  //   originalname: 'Фото Резюме 1_1.jpg',
+  //   encoding: '7bit',
+  //   mimetype: 'image/jpeg',
+  //   destination: 'C:\\Projects\\express-mongoose-server\\tmp',
+  //   filename: '62bdb022846f8ca667342caa-Фото Резюме 1_1.jpg',
+  //   path: 'C:\\Projects\\express-mongoose-server\\tmp\\Фото Резюме 1_1.jpg',
+  //   size: 171399
+  // }
+  const avatarURL = `${process.env.API_URL}/avatars/${filename}` // путь к файлу и папке на сервере !
 
   try {
-    const updatedUser = await userService.update(req.user.id, req.body)
+    const userData = await userService.update(id, { avatarURL })
 
-    if (updatedUser) {
-      const { id: _id, subscription, role } = updatedUser
+    if (userData) {
+      const user = new UserDto(userData)
 
       return res
         .status(200)
         .json({
           status: 'Ok',
           code: 200,
-          data: {
-            updatedUser: { id, subscription, role, }
-          }
+          data: { user }
         })
     }
   } catch (e) {
@@ -161,6 +197,7 @@ export default {
   getById,
   getCurrent,
   update,
-  updateCurrentUserSubscription,
+  updateSubscription,
+  updateAvatar,
   remove,
 }

@@ -1,6 +1,7 @@
 import { Router } from 'express'
 
-import { auth, validateId, validateContact } from '../middlewares/index.js'
+import auth from '../middlewares/authMiddleware.js'
+import { validateId, validateContact } from '../middlewares/validateMiddleware.js'
 import contactCtrl from '../controllers/contactController.js'
 
 const router = Router()

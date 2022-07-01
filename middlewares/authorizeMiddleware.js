@@ -12,4 +12,4 @@ const authorizeAdmin = (req, res, next) => {
   next()
 }
 
-export { authorizeAdmin }
+export default authorizeAdmin 

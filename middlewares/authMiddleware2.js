@@ -13,7 +13,7 @@ const authenticateToken = async (req, res, next) => {
 
     const accessToken =
       authHeader && authHeader.startsWith('Bearer ')
-        ? authHeader.replace('Bearer ', '')
+        ? authHeader.replace('Bearer ', '') // authHeader.split('')[1] 
         : null
 
     if (!accessToken) {

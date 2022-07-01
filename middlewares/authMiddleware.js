@@ -1,6 +1,6 @@
 import passport from 'passport'
-
-const authenticateToken = async (req, res, next) => {
+// authenticateToken
+const auth = async (req, res, next) => {
   passport.authenticate('jwt', { session: false }, (err, user) => {
     if (!user || err) {
       return res
@@ -16,4 +16,4 @@ const authenticateToken = async (req, res, next) => {
   })(req, res, next);
 }
 
-export { authenticateToken } 
+export default auth 

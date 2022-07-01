@@ -1,4 +1,5 @@
 import { v4 } from 'uuid'
+import gravatar from 'gravatar'
 
 import User from './models/userSchema.js'
 import UserDto from '../dtos/userDto.js'
@@ -13,12 +14,13 @@ const signup = async (email, password) => {
     throw ApiError.Conflict(`Email ${email} is already in use`)
   }
 
-  const verificationToken = v4()
-  const user = new User({ email, verificationToken })
+  const verifyToken = v4()
+  const avatarURL = gravatar.url(email, { s: 200, r: 'pg', d: '404' })
+  const user = new User({ email, verifyToken, avatarURL })
   user.setPassword(password)
   const newUser = await user.save()
 
-  const link = `${process.env.API_URL}/auth/verify/${verificationToken}`
+  const link = `${process.env.API_URL}/auth/verify/${verifyToken}`
   await sendVerifyMail(email, link)
 
   const userDto = new UserDto(newUser)

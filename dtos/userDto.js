@@ -2,6 +2,7 @@ class UserDto {
   id;
   email;
   subscription;
+  avatarURL;
   role;
   verified;
 
@@ -9,6 +10,7 @@ class UserDto {
     this.id = model._id;
     this.email = model.email;
     this.subscription = model.subscription;
+    this.avatarURL = model.avatarURL;
     this.role = model.role;
     this.verified = model.verified;
   }
